@@ -1,0 +1,18 @@
+USE FULL PATH INSTEAD OF * IN ALL FILES!
+
+This is a core implementation of the Horus Service, it is not a standalone plugin, it has no API to call.
+
+	1. Make a copy of the existing Moodle directory or install a new Moodle service.
+	2. Make a copy of the existing Moodle database which is wanted to be anonymised.
+		If you installed a naked Moodle, use the original database (that you want to anonymise) instead of the new installation database.
+	3. Copy the horus directory (the source of the Horus Service) into the Moodle's directory (top-level, where the config.php is also stored).
+	4. Set Moodle's directory to include the config.php of the Moodle core in common\CommonDatabaseTranslator file.
+
+Because of some incompatibilities, the following modifications have to be made
+	comment out
+		$this->check_field_dependencies($xmldb_table, $xmldb_field);
+	command of public function change_field_type in the lib/ddl/database_manager.php file in line 589 (09. April 2019 github version)
+	
+	comment out
+		unset($columns['id']);
+	command of public function insert_records($table, $dataobjects) in the lib\dml\mysqli_native_moodle_database.php file in line 1446 (22. Aug. 2019 github version) If not MySQL is used, then command(s) with the same behaviour has to find and be commented out in the appropriate database file(s)!

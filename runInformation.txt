@@ -1,0 +1,38 @@
+USE FULL PATH INSTEAD OF * IN ALL FILES!
+
+After all setup steps was made, please follow the instructions below to call the Horus Service.
+The Horus Service modifies the currently used Moodle database, so before calling it, ensure to have a backup of the original Moodle database!
+
+	C1. Create JSON files
+		-(data.json) tables and their attributes for anonymisation,
+			Format: array("table_name"=>array("attribute_name"))
+		-tables for the Black or White lists.
+			Format: array("table_name"=>null)
+		You can use the json_generator.php to create them.
+	
+	C2. testCall.php contains the call information and example codes.
+		The Horus Service can be called via \core\Core::anonymiseDatabase(a,[b,c]) function with parameters below
+			a: data.json path is mandatory, this file contains information about what will be anonymised
+			b: give the path of black or white list file to use the WhiteBlackList option
+			c: give the 'BlackList' or 'WhiteList' value to use the WhiteBlackList option
+			
+			examples
+				\core\Core::anonymiseDatabase('*\data.json');
+				\core\Core::anonymiseDatabase('*\data.json', '*\blackL.json', 'BlackList');
+				\core\Core::anonymiseDatabase('*\data.json', '*\whiteL.json', 'WhiteList');
+
+	C3. Open the */testCall.php URL in the browser.
+		for example http://example.com/moodle/horus/testCall.php
+
+
+To repeat our tests follow the steps below:
+	T1. Delete all records from the user table and import the "mdl_user -originalDataSet.csv" file of the directory testDataSet_artificial into the user table.
+
+	T2. Modify the \common\CommonFunctions::generateSalt function to give the content of the testKey_2019-10-02 file back:
+		public static function generateSalt(int $size=512)
+		{
+			//return bin2hex(random_bytes($size));
+			return "6c9c375340107a955cb741fd7746d7715ce9c688c9deadaae762087a9d1aba4e217829761b2b2124b141568d1e3150bf7e7819b7608a7c592da1c5ff6c2bfbd82ba590660a80db5e5087c0fae3e1a2f73db297d2b39c456d7cceca43b9faac55fc49e61c56fdacf917aaa03f8dbc8f75b4fd7f3854210ad4c6aee1296629ab2ae44ca08048a43c665929b4b176ad887b0240d402919b4360f47d456767eeec5a221beb1aca9b3d592b2691a4174896a0e97d67fe14b861d1a552641f50713e57c8a1309272b52feadeaf80c35a765e742f0a51616ba318e2cab0ba15aa099dcfb682e7ddfe64b93d83d7df14df8ad6cbc89da3bad6e8956cb37db8fcb8841d851c8e95e4f16d6d47fa2659c318735af94a35965ff43444b08cabfd73432a6fccba14199955629107b6d5f0f724bfe4fcfc367fa66f25e370ba0960e244eb39a670f20dafb9dd2b38cd1970db8769c5dc125314a1b4d9a93f5520073ee0af1b27b35bb7f32bf062ebbf0e0d62e8e6539c4162e5f480569e103ecab075292bb129f79656d0150753224559faa369ac672d33e9978eab821a8f9b0554c5d19b338776f519807f3e31177a05b33b4b1c2fdf2db28aecce77d953515873014184837cc4bca7e66cd634a925e4414c1181bbce5ad49d796850e3253b929a4a9e9721e071a25546320185cb38178f2e7ce285adef6587b4ea9f31a622430ddfa974f846";
+		}
+
+	T3. Use the testCall.php to call the Horus Service. (step C3)
